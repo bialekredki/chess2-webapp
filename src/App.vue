@@ -11,7 +11,7 @@
           <v-tab v-if="this.$store.getters['auth/isLoggedIn']"><v-icon>mdi-message-badge</v-icon>Inbox</v-tab>
           <v-tab><v-icon>mdi-account-group</v-icon>Social</v-tab>
           <v-tab 
-          v-if="this.$store.getters['auth/isLoggedIn'] && this.$store.getters['auth/canAccessAdminPanel']"
+          v-if="this.$store.getters['auth/isLoggedIn'] && this.$store.getters['user/canAccessAdminPanel']"
           to="/admin"
           ><v-icon>mdi-shield-crown</v-icon>
           Admin
@@ -78,12 +78,18 @@ export default class App extends Vue {
           {title: 'Games', icon: 'mdi-chess-queen', to:'' },
           {title: 'Reports', icon: 'mdi-chart-bell-curve', to:'/admin/reports' },
         ],
+    user: [{ title: 'Profile', icon: 'mdi-account', to:'/admin/users' },
+          {title: 'Games', icon: 'mdi-chess-pawn', to:'' },
+          {title: 'Friends', icon: 'mdi-account-group', to:'' },
+          {title: 'Settings', icon: 'mdi-cog', to:'/admin/reports' },
+        ],
   };
 
   private drawer = true;
 
   get itemsKey(): any {
-    if (this.$route.name && this.$route.name.toLowerCase() in this.items) return this.$route.name.toLowerCase();
+    let name = this.$route.name?.toLowerCase().split('.')[0]
+    if (name && name in this.items) return name;
     return 'home';
   }
   

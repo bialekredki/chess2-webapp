@@ -11,7 +11,8 @@ import AdminPanel from "@/views/AdminPanel.vue";
 import AdminPanelUsers from "@/components/AdminPanelUsers.vue";
 import AdminPanelReports from "@/components/AdminPanelReports.vue";
 import PageNotFound from "@/views/PageNotFound.vue"
-import { component } from "vue/types/umd";
+import User from "@/views/User.vue"
+import store from '@/store';
 
 Vue.use(VueRouter);
 
@@ -34,6 +35,11 @@ const routes: Array<RouteConfig> = [
     path: "/inbox",
     name: "Inbox",
     component: Inbox,
+  },
+  {
+    path: "/me/:name",
+    name: "User",
+    component: User,
   },
   {
     path: "/social",
@@ -66,23 +72,18 @@ const routes: Array<RouteConfig> = [
     component: Logout,
   },
   {
-    path: "/logout",
-    name: "Logout",
-    component: Logout,
-  },
-  {
     path: "/admin",
     name: "Admin",
     component: AdminPanel,
     children: [
       {
         path: 'users',
-        name: "Admin",
+        name: "Admin.Users",
         component: AdminPanelUsers
       },
       {
         path: 'reports',
-        name: "Admin",
+        name: "Admin.Reports",
         component: AdminPanelReports
       },
     ],
@@ -100,8 +101,14 @@ const router = new VueRouter({
   routes,
 });
 
-// router.beforeEach((to:Route, from:Route, next:NavigationGuardNext) => {
-  
-// });
+router.beforeEach((to:Route, from:Route, next:NavigationGuardNext) => {
+  if (to.name?.includes('Admin') && !store.getters['user/canAccessAdminPanel']) {
+    console.log(store);
+    next({ name: 'NotFound' });
+  }
+  else {
+    next();
+  }
+});
 
 export default router;

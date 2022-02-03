@@ -25,20 +25,30 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import axios, { AxiosResponse } from 'axios';
 
 @Component
 export default class UserPanel extends Vue {
-    private items = [
-        {title: 'Me', icon: '' , route: '/me', whenLogged: true},
+    get items(): any { return [
+        {title: this.$store.getters['user/getName'], icon: '' , route: `/me/${this.userName}`, whenLogged: true},
         {title: 'Login', icon: '' , route: '/login', whenLogged: false},
         {title: 'Logout', icon: '', route: '/logout', whenLogged: true},
         {title: 'Register', icon: '', route: '/signup', whenLogged: false},
     ];
+    }
+
+    get isLoggedIn(): boolean {
+      return this.$store.getters['auth/isLoggedIn'];
+    }
+
+    get userName(): string {
+      if (this.isLoggedIn) return this.$store.getters['user/getName'];
+      return ''
+    }
 
     get avatarURL(): string {
-      if (this.$store.getters['auth/isLoggedIn']) return `${axios.defaults.baseURL}me/${this.$store.getters['auth/getToken']}/avatar`
+      if (this.isLoggedIn) return `${axios.defaults.baseURL}me/${this.$store.getters['auth/getToken']}/avatar`
       return ''
     }
 
